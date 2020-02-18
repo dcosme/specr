@@ -32,7 +32,11 @@ plot_curve <- function(df,
                        desc = FALSE,
                        ci = TRUE,
                        legend = FALSE,
-                       null = 0){
+                       null = 0,
+                       point_alpha = 1,
+                       point_size = 1,
+                       ci_alpha = .5,
+                       ci_size = .5){
 
   require(ggplot2, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -46,7 +50,8 @@ plot_curve <- function(df,
                ymax = conf.high,
                color = color)) +
     geom_point(aes(color = color),
-               size = 1) +
+               alpha = point_alpha,
+               size = point_size) +
     theme_minimal() +
     scale_color_identity() +
     theme(strip.text = element_blank(),
@@ -64,8 +69,8 @@ plot_curve <- function(df,
   # add CIs if necessary
   if (isTRUE(ci)) {
     plot <- plot +
-      geom_pointrange(alpha = 0.5,
-                      size = .6,
+      geom_pointrange(alpha = ci_alpha,
+                      size = ci_size,
                       fatten = 1)
   }
 
