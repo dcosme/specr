@@ -58,8 +58,8 @@ format_results <- function(df, null = 0, desc = FALSE) {
   }
   df <- df %>%
     mutate(specifications = 1:n(),
-           color = case_when(conf.low > null ~ "#377eb8",
-                             conf.high < null ~ "#e41a1c",
+           color = case_when(conf.low > null ~ "black",
+                             conf.high < null ~ "black",
                              TRUE ~ "darkgrey"))
 
   return(df)

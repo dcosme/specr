@@ -28,7 +28,9 @@
 plot_choices <- function(df,
                          choices = c("x", "y", "model", "controls", "subsets"),
                          desc = FALSE,
-                         null = 0) {
+                         null = 0,
+                         rename_controls = FALSE,
+                         ignore_vars = FALSE) {
 
   require(ggplot2, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -37,7 +39,10 @@ plot_choices <- function(df,
     format_results(desc = desc, null = null) %>%
     mutate(controls = ifelse(grepl("[+]", controls), "all covariates", controls)) %>%
     tidyr::gather(key, value, choices) %>%
-    mutate(key = factor(key, levels=choices)) %>%
+    mutate(key = ifelse(isFALSE(rename_controls) == FALSE & key == "controls", rename_controls, key),
+           value = ifelse(isFALSE(ignore_vars) == FALSE & value %in% ignore_vars, NA, value)) %>%
+    filter(!is.na(value)) %>%
+    mutate(key = factor(key, levels=unique(key))) %>%
     ggplot(aes(x = specifications,
                y = value,
                color = color)) +
