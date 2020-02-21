@@ -36,7 +36,8 @@ plot_curve <- function(df,
                        point_alpha = 1,
                        point_size = 1,
                        ci_alpha = .5,
-                       ci_size = .5){
+                       ci_size = .5,
+                       limits = NULL){
 
   require(ggplot2, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -60,6 +61,10 @@ plot_curve <- function(df,
           panel.spacing = unit(.75, "lines"),
           axis.text = element_text(colour = "black")) +
     labs(x = "")
+
+  if (!is.null(limits)) {
+    plot <- plot + scale_y_continuous(limits = limits)
+  }
 
   if (isFALSE(legend)) {
     plot <- plot +
