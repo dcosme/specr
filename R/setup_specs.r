@@ -18,7 +18,8 @@
 setup_specs <- function(x,
                         y,
                         model,
-                        controls = NULL) {
+                        controls = NULL,
+                        random_effects = NULL) {
   # dependencies
   require(dplyr, quietly = TRUE)
 
@@ -33,11 +34,18 @@ setup_specs <- function(x,
   } else {
     controls <- "no covariates"
   }
+
+  # create random effects
+  if (rlang::is_null(random_effects)) {
+    random_effects <- "no random effects"
+  }
+
   # Expand to all possible combinations
   expand.grid(x = x,
               y = y,
               model = model,
-              controls = controls) %>%
+              controls = controls,
+              random_effects = random_effects) %>%
     tbl_df %>%
     mutate_all(as.character)
 }

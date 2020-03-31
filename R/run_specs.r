@@ -26,7 +26,7 @@
 #'
 #' # Check results frame
 #' results
-run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, conf.level = 0.95, keep.results = FALSE) {
+run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, random_effects = NULL, conf.level = 0.95, keep.results = FALSE) {
 
   # dependencies
   require(dplyr, quietly = TRUE)
@@ -34,7 +34,7 @@ run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, conf.lev
 
 
 
-  specs <- setup_specs(y = y, x = x, model = model, controls = controls)
+  specs <- setup_specs(y = y, x = x, model = model, controls = controls, random_effects)
 
   if (!is.null(subsets)) {
 
@@ -68,7 +68,7 @@ run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, conf.lev
 
   } else {
 
-  run_spec(specs, df, conf.level = conf.level, keep.results = keep.results) %>%
+  run_spec(specs, df, random_effects = random_effects, conf.level = conf.level, keep.results = keep.results) %>%
     mutate(subsets = "all")
 
   }
