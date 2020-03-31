@@ -17,31 +17,51 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
   # dependencies
   require(dplyr)
   require(purrr)
+  require(lme4)
+  require(broom.mixed)
 
-  # if (!is.null(random_effects)) {
-  #   mod_formulas <- specs %>%
-  #     mutate(formula = pmap(., create_formula)) %>%
-  #     tidyr::unnest(formula) %>%
-  #     select(formula)
-  #
-  #   params <- list()
-  #   for(i in 1:length(mod_formulas$formula)) {
-  #     tmp <- list(formula = mod_formulas$formula[i], data = df)
-  #     params[[i]] <- tmp
-  #   }
-  #
-  #   df_in <- tibble(model = unique(specs$model), params = params)
-  #
-  #   results = df_in %>%
-  #     mutate(res = invoke_map(.$model, .$params)) %>%
-  #     mutate(coefs = map(res, broom.mixed::tidy, conf.int = TRUE, conf.level = conf.level),
-  #            obs = map(res, nobs)) %>%
-  #     tidyr::unnest(coefs) %>%
-  #     tidyr::unnest(obs) %>%
-  #     dplyr::filter(term %in% unique(specs$x)) %>%
-  #     dplyr::select(-.data$formula, -.data$term)
-  #
-  # } else {
+  if (!is.null(random_effects)) {
+    # mod_formulas <- specs %>%
+    #   mutate(formula = pmap(., create_formula)) %>%
+    #   tidyr::unnest(formula) %>%
+    #   select(formula)
+    #
+    # params <- list()
+    # for(i in 1:length(mod_formulas$formula)) {
+    #   tmp <- list(formula = mod_formulas$formula[i], data = df)
+    #   params[[i]] <- tmp
+    # }
+    #
+    # df_in <- tibble(model = unique(specs$model), params = params)
+    #
+    # results = df_in %>%
+    #   mutate(res = invoke_map(.$model, .$params)) %>%
+    #   mutate(coefs = map(res, broom.mixed::tidy, conf.int = TRUE, conf.level = conf.level),
+    #          obs = map(res, nobs)) %>%
+    #   tidyr::unnest(coefs) %>%
+    #   tidyr::unnest(obs) %>%
+    #   dplyr::filter(term %in% unique(specs$x)) %>%
+    #   dplyr::select(-.data$formula, -.data$term)
+
+    results <- specs %>%
+      dplyr::mutate(formula = pmap(specs, create_formula)) %>%
+      tidyr::unnest(formula) %>%
+      dplyr::mutate(res = map2(.data$model,
+                               formula,
+                               ~ do.call(.x, list(data = df,
+                                                  formula = .y)))) %>%
+      dplyr::mutate(coefs = map(.data$res,
+                                broom::tidy,
+                                conf.int = TRUE,
+                                conf.level = conf.level),
+                    obs = map(.data$res, nobs)) %>%
+      tidyr::unnest(.data$coefs) %>%
+      tidyr::unnest(.data$obs) %>%
+      dplyr::filter(.data$term == .data$x) %>%
+      dplyr::select(-.data$formula, -.data$term) %>%
+      dplyr::select(-group)
+
+  } else {
 
     results <- specs %>%
       dplyr::mutate(formula = pmap(specs, create_formula)) %>%
@@ -60,7 +80,7 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
       dplyr::filter(.data$term == .data$x) %>%
       dplyr::select(-.data$formula, -.data$term)
 
-  # }
+}
 
   if (isFALSE(keep.results)) {
     results <- results %>%
