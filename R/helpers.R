@@ -21,27 +21,6 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
   require(broom.mixed)
 
   if (!is.null(random_effects)) {
-    # mod_formulas <- specs %>%
-    #   mutate(formula = pmap(., create_formula)) %>%
-    #   tidyr::unnest(formula) %>%
-    #   select(formula)
-    #
-    # params <- list()
-    # for(i in 1:length(mod_formulas$formula)) {
-    #   tmp <- list(formula = mod_formulas$formula[i], data = df)
-    #   params[[i]] <- tmp
-    # }
-    #
-    # df_in <- tibble(model = unique(specs$model), params = params)
-    #
-    # results = df_in %>%
-    #   mutate(res = invoke_map(.$model, .$params)) %>%
-    #   mutate(coefs = map(res, broom.mixed::tidy, conf.int = TRUE, conf.level = conf.level),
-    #          obs = map(res, nobs)) %>%
-    #   tidyr::unnest(coefs) %>%
-    #   tidyr::unnest(obs) %>%
-    #   dplyr::filter(term %in% unique(specs$x)) %>%
-    #   dplyr::select(-.data$formula, -.data$term)
 
     results <- specs %>%
       dplyr::mutate(formula = pmap(specs, create_formula)) %>%
@@ -51,7 +30,7 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
                                ~ do.call(.x, list(data = df,
                                                   formula = .y)))) %>%
       dplyr::mutate(coefs = map(.data$res,
-                                broom::tidy,
+                                broom.mixed::tidy,
                                 conf.int = TRUE,
                                 conf.level = conf.level),
                     obs = map(.data$res, nobs)) %>%
