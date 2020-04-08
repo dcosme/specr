@@ -68,7 +68,7 @@ run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, random_e
 
   } else {
 
-  run_spec(specs, df, random_effects = random_effects, conf.level = conf.level, keep.results = keep.results) %>%
+  run_specs(specs, df, random_effects = random_effects, conf.level = conf.level, keep.results = keep.results) %>%
     mutate(subsets = "all")
 
   }
