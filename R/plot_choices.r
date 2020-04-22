@@ -29,6 +29,7 @@ plot_choices <- function(df,
                          choices = c("x", "y", "model", "controls", "subsets"),
                          desc = FALSE,
                          null = 0,
+                         size = 3.35,
                          color_vars = FALSE,
                          palette = palette,
                          rename_controls = FALSE,
@@ -68,7 +69,7 @@ plot_choices <- function(df,
     geom_point(aes(x = specifications,
                    y = value),
                shape = 124,
-               size = 3.35) +
+               size = size) +
     scale_color_identity() +
     theme_minimal() +
     facet_grid(key~1, scales = "free_y", space = "free_y") +
