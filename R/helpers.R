@@ -12,7 +12,7 @@ create_formula <- function(x, y, controls, random_effects, ...) {
 }
 
 # run individual specification
-run_spec <- function(specs, df, random_effects = random_effects, conf.level, keep.results = FALSE) {
+run_spec <- function(specs, df, random_effects = random_effects, conf.level, keep.results = FALSE, keep.formula = FALSE) {
 
   # dependencies
   require(dplyr)
@@ -37,8 +37,7 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
       tidyr::unnest(.data$coefs) %>%
       tidyr::unnest(.data$obs) %>%
       dplyr::filter(.data$term == .data$x) %>%
-      dplyr::select(-.data$formula, -.data$term) %>%
-      dplyr::select(-group)
+      dplyr::select(-.data$term)
 
   } else {
 
@@ -57,13 +56,18 @@ run_spec <- function(specs, df, random_effects = random_effects, conf.level, kee
       tidyr::unnest(.data$coefs) %>%
       tidyr::unnest(.data$obs) %>%
       dplyr::filter(.data$term == .data$x) %>%
-      dplyr::select(-.data$formula, -.data$term)
+      dplyr::select(-.data$term)
 
 }
 
   if (isFALSE(keep.results)) {
     results <- results %>%
       select(-res)
+  }
+
+  if (isFALSE(keep.formula)) {
+    results <- results %>%
+      select(-formula)
   }
 
   return(results)
