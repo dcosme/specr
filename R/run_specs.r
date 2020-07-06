@@ -64,7 +64,7 @@ run_specs <- function(df, y, x, model, controls = NULL, subsets = NULL, random_e
 
   }
 
-  map_df(df_all, ~ run_spec(specs, .x, random_effects = random_effects, conf.level = conf.level, keep.results = keep.results) %>%
+  map_df(df_all, ~ run_spec(specs, .x, random_effects = random_effects, conf.level = conf.level, keep.results = keep.results, keep.formula = keep.formula) %>%
            mutate(subsets = unique(.x$filter)))
 
   } else {
