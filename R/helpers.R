@@ -12,7 +12,7 @@ create_formula <- function(x, y, controls, random_effects, ...) {
 }
 
 # run individual specification
-run_spec <- function(specs, df, random_effects = random_effects, conf.level, keep.results = FALSE, keep.formula = FALSE) {
+run_spec <- function(specs, df, random_effects, conf.level, keep.results, keep.formula) {
 
   # dependencies
   require(dplyr)
