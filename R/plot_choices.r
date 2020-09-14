@@ -30,7 +30,8 @@ plot_choices <- function(df,
                          desc = FALSE,
                          null = 0,
                          size = 3.35,
-                         color_vars = FALSE,
+                         alpha_values = c(.25, 1),
+                         color_vars = NULL,
                          palette = palette,
                          rename_controls = FALSE,
                          ignore_vars = FALSE) {
@@ -43,17 +44,43 @@ plot_choices <- function(df,
     mutate(controls = ifelse(grepl("[+]", controls), "all covariates", controls)) %>%
     tidyr::gather(key, value, choices) %>%
     mutate(key = ifelse(isFALSE(rename_controls) == FALSE & key == "controls", rename_controls, key),
-           value = ifelse(isFALSE(ignore_vars) == FALSE & value %in% ignore_vars, NA, value)) %>%
+           value = ifelse(isFALSE(ignore_vars) == FALSE & value %in% ignore_vars, NA, value),
+           alpha = "yes") %>%
     filter(!is.na(value)) %>%
     mutate(key = factor(key, levels=unique(key)))
 
-  if (isTRUE(color_vars)) {
+  if (color_vars == "x") {
+
+    color_num_key = df %>%
+      select(y) %>%
+      unique() %>%
+      mutate(color_num = row_number())
 
     data_df = df %>%
       format_results(desc = desc, null = null) %>%
-      arrange(x) %>%
+      left_join(., color_num_key) %>%
       mutate(controls = ifelse(grepl("[+]", controls), "all covariates", controls),
-             color_num = rep(1:length(unique(.$x)), each = nrow(.) / length(unique(.$x))),
+             alpha = ifelse(color == "black", "yes", "no"),
+             color = sprintf("%s", eval(parse(text = "palette[color_num]")))) %>%
+      tidyr::gather(key, value, choices) %>%
+      mutate(key = ifelse(isFALSE(rename_controls) == FALSE & key == "controls", rename_controls, key),
+             value = ifelse(isFALSE(ignore_vars) == FALSE & value %in% ignore_vars, NA, value)) %>%
+      filter(!is.na(value)) %>%
+      mutate(key = factor(key, levels=unique(key)))
+  }
+
+  if (color_vars == "y") {
+
+    color_num_key = df %>%
+      select(y) %>%
+      unique() %>%
+      mutate(color_num = row_number())
+
+    data_df = df %>%
+      format_results(desc = desc, null = null) %>%
+      left_join(., color_num_key) %>%
+      mutate(controls = ifelse(grepl("[+]", controls), "all covariates", controls),
+             alpha = ifelse(color == "black", "yes", "no"),
              color = sprintf("%s", eval(parse(text = "palette[color_num]")))) %>%
       tidyr::gather(key, value, choices) %>%
       mutate(key = ifelse(isFALSE(rename_controls) == FALSE & key == "controls", rename_controls, key),
@@ -67,10 +94,12 @@ plot_choices <- function(df,
                y = value,
                color = color)) +
     geom_point(aes(x = specifications,
-                   y = value),
+                   y = value,
+                   alpha = alpha),
                shape = 124,
                size = size) +
     scale_color_identity() +
+    scale_alpha_manual(values = alpha_values) +
     theme_minimal() +
     facet_grid(key~1, scales = "free_y", space = "free_y") +
     theme(
