@@ -55,6 +55,7 @@ plot_choices <- function(df,
       color_num_key = df %>%
         select(x) %>%
         unique() %>%
+        arrange(x) %>%
         mutate(color_num = row_number())
 
       data_df = df %>%
@@ -75,6 +76,7 @@ plot_choices <- function(df,
       color_num_key = df %>%
         select(y) %>%
         unique() %>%
+        arrange(y) %>%
         mutate(color_num = row_number())
 
       data_df = df %>%
