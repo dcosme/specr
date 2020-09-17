@@ -32,7 +32,7 @@ plot_choices <- function(df,
                          size = 3.35,
                          alpha_values = c(.25, 1),
                          color_vars = NULL,
-                         palette = palette,
+                         palette = NULL,
                          rename_controls = FALSE,
                          ignore_vars = FALSE) {
 
@@ -53,7 +53,7 @@ plot_choices <- function(df,
     if (color_vars == "x") {
 
       color_num_key = df %>%
-        select(y) %>%
+        select(x) %>%
         unique() %>%
         mutate(color_num = row_number())
 
