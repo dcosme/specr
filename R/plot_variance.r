@@ -1,8 +1,11 @@
-#' Plot variance components of the specification curve
+#' Plot variance decomposition
 #'
-#' @param model a multilevel model that captures the variances of the specification curve (resulting from \code{run_specs}).
+#' This functions creates a simple barplot that visually displays how much variance in the outcome (e.g., the regression coefficient) different analytical choices or combinations therefor account for. To use this approach, one needs to estimate a multilevel model that includes all analytical choices as grouping variables (see examples and vignettes). This function uses [icc_specs()] to compute the intraclass correlation coefficients (ICCs), which provides the data basis for the plot (see examples).
 #'
-#' @return
+#' @param model a multilevel model that captures the variances of the specification curve (based on the data frame resulting from \code{run_specs}).
+#'
+#' @return a \link[ggplot2]{ggplot} object.
+#'
 #' @export
 #'
 #' @examples
@@ -13,19 +16,18 @@
 #'                      model = c("lm"))
 #'
 #' # Step 2: Estimate multilevel model
-#' library(lme4)
+#' library(lme4, quietly = TRUE)
 #' model <- lmer(estimate ~ 1 + (1|x)  + (1|y), data = results)
 #'
 #' # Step 3: Plot model
 #' plot_variance(model)
+#'
+#' @seealso [icc_specs()] to produce a tibble that details the variance decomposition.
 plot_variance <- function(model) {
 
-  # dependencies
-  require(ggplot2, quietly = TRUE)
-
   icc_specs(model) %>%
-    ggplot(aes(x = grp,
-               y = percent)) +
+    ggplot(aes(x = .data$grp,
+               y = .data$percent)) +
     geom_bar(stat = "identity", fill = "#377eb8") +
     theme_minimal() +
     theme(axis.text = element_text(colour = "black"),

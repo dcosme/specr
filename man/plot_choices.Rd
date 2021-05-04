@@ -4,20 +4,30 @@
 \alias{plot_choices}
 \title{Plot how analytical choices affect results}
 \usage{
-plot_choices(df, choices = c("x", "y", "model", "controls", "subsets"),
-  desc = FALSE, null = 0)
+plot_choices(
+  df,
+  var = .data$estimate,
+  choices = c("x", "y", "model", "controls", "subsets"),
+  desc = FALSE,
+  null = 0
+)
 }
 \arguments{
-\item{df}{a data frame containing the choices and results of each specification (resulting from \code{run_specs}).}
+\item{df}{a data frame resulting from \code{run_specs()}.}
+
+\item{var}{which variable should be evaluated? Defaults to estimate (the effect sizes computed by \code{\link[=run_specs]{run_specs()}}).}
 
 \item{choices}{a vector specifying which analytical choices should be plotted. By default, all choices are plotted.}
 
 \item{desc}{logical value indicating whether the curve should the arranged in a descending order. Defaults to FALSE.}
 
-\item{null}{Indicate what value represents the null hypothesis (Defaults to zero).}
+\item{null}{Indicate what value represents the 'null' hypothesis (Defaults to zero).}
+}
+\value{
+a \link[ggplot2]{ggplot} object.
 }
 \description{
-This functions plots how the analytical choices affect the obtained results (i.e., the rank within the curve). Significant results are highlighted. Further customization via ggplot2 is possible.
+This functions plots how analytical choices affect the obtained results (i.e., the rank within the curve). Significant results are highlighted (negative = red, positive = blue, grey = nonsignificant). This functions creates the lower panel in \code{plot_specs()}.
 }
 \examples{
 # Run specification curve analysis
@@ -33,5 +43,6 @@ results <- run_specs(df = example_data,
 plot_choices(results)
 
 # Plot only specific choices
-plot_choices(results, choices = c("x", "y", "controls"))
+plot_choices(results,
+             choices = c("x", "y", "controls"))
 }

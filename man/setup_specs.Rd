@@ -2,25 +2,40 @@
 % Please edit documentation in R/setup_specs.r
 \name{setup_specs}
 \alias{setup_specs}
-\title{Create result frame with all specifications}
+\title{Set up specifications}
 \usage{
-setup_specs(x, y, model, controls = NULL)
+setup_specs(x, y, model, controls = NULL, all.comb = FALSE)
 }
 \arguments{
-\item{x}{a vector of the independent variables}
+\item{x}{a vector denoting independent variables}
 
-\item{y}{a vector of the dependent variables}
+\item{y}{a vector denoting the dependent variables}
 
-\item{model}{a vector of the type of models that should be estimated}
+\item{model}{a vector denoting the model(s) that should be estimated.}
 
-\item{controls}{a vector of the control variables that should be included. Defaults to none.}
+\item{controls}{a vector of the control variables that should be included. Defaults to NULL.}
+
+\item{all.comb}{a logical value indicating what type of combinations of the control variables should be specified. Defaults to FALSE (i.e., none, all, and each individually). If this argument is set to TRUE, all possible combinations between the control variables are specified (see examples).}
+}
+\value{
+a \link[tibble:tibble-package]{tibble} that includes all possible specifications based on combinations of the analytical choices.
 }
 \description{
-This function creates a data frame that includes all possible specifications based on different dependent and independent variables, different types of models, and different control variables. This function can be used to check the combinations of analytical choices. Otherwise, the function is called with \code{run_specs()}.
+This function creates a tibble that includes all possible specifications based the dependent and independent variables, model types, and control variables that are specified. This function simply produces a tibble of all combinations. It can be used to check the specified analytical choices. This function is called within \code{\link[=run_specs]{run_specs()}}, which estimates all specified models based on the data that are provided.
 }
 \examples{
-setup_specs(y = c("y1"),               # We choose only one dependent variale
-            x = c("x1", "x2"),         # We are not sure which independent variable is better
-            model = c("lm"),           # We only estimate one type of model (linear model)
-            controls = c("c1", "c2"))  # We include two control variable
+setup_specs(y = c("y1"),
+            x = c("x1", "x2"),
+            model = c("lm"),
+            controls = c("c1", "c2"))
+
+setup_specs(y = c("y1"),
+            x = c("x1", "x2"),
+            model = c("lm"),
+            controls = c("c1", "c2", "c3"),
+            all.comb = TRUE)
+
+}
+\seealso{
+\code{\link[=run_specs]{run_specs()}} to run the specification curve analysis.
 }

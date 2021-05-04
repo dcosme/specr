@@ -2,30 +2,44 @@
 % Please edit documentation in R/run_specs.r
 \name{run_specs}
 \alias{run_specs}
-\title{Run specification curve analysis}
+\title{Estimate all specifications}
 \usage{
-run_specs(df, y, x, model, controls = NULL, subsets = NULL,
-  conf.level = 0.95, keep.results = FALSE)
+run_specs(
+  df,
+  x,
+  y,
+  model = "lm",
+  controls = NULL,
+  subsets = NULL,
+  all.comb = FALSE,
+  conf.level = 0.95,
+  keep.results = FALSE
+)
 }
 \arguments{
 \item{df}{a data frame that includes all relevant variables}
 
-\item{y}{a vector of the dependent variables}
+\item{x}{a vector denoting independent variables}
 
-\item{x}{a vector of the dependent variables}
+\item{y}{a vector denoting the dependent variables}
 
-\item{model}{a vector of the type of models that should be estimated.}
+\item{model}{a vector denoting the model(s) that should be estimated.}
 
-\item{controls}{a vector of the control variables that should be included. Defaults to none.}
+\item{controls}{a vector denoting which control variables should be included. Defaults to NULL.}
 
-\item{subsets}{a list that includes named vectors}
+\item{subsets}{a named list that includes potential subsets that should be evaluated (see examples). Defaults to NULL.}
 
-\item{conf.level}{the confidence level to use for the confidence interval. Must be strictly greater than 0 and less than 1. Defaults to 0.95, which corresponds to a 95 percent confidence interval.}
+\item{all.comb}{a logical value indicating what type of combinations of the control variables should be specified. Defaults to FALSE (i.e., none, all, and each individually). If this argument is set to TRUE, all possible combinations between the control variables are specified (see examples).}
 
-\item{keep.results}{a logical value indicating whether the complete model object should be kept.}
+\item{conf.level}{the confidence level to use for the confidence interval. Must be strictly greater than 0 and less than 1. Defaults to .95, which corresponds to a 95 percent confidence interval.}
+
+\item{keep.results}{a logical value indicating whether the complete model object should be kept. Defaults to FALSE.}
+}
+\value{
+a \link[tibble:tibble-package]{tibble} that includes all specifications and a tidy summary of model components.
 }
 \description{
-This is the central function of the package. It can be used to run the specification curve analyses. It takes the data frame and vectors for analytical choices related to the dependent variable, the independent variable, the type of models that should be estimated, the set of covariates that should be included (none, each individually, and all together), as well as a named list of potential subsets. It returns a "result frame" which includes relevant statistics for each model as well as the analytical choices as factorial variables.
+This is the central function of the package. It runs the specification curve analysis. It takes the data frame and vectors for analytical choices related to the dependent variable, the independent variable, the type of models that should be estimated, the set of covariates that should be included (none, each individually, and all together), as well as a named list of potential subsets. The function returns a tidy tibble which includes relevant model parameters for each specification. The function \link[broom]{tidy} is used to extract relevant model parameters. Exactly what tidy considers to be a model component varies across models but is usually self-evident.
 }
 \examples{
 # run specification curve analysis
@@ -39,4 +53,14 @@ results <- run_specs(df = example_data,
 
 # Check results frame
 results
+
+}
+\references{
+\itemize{
+\item Simonsohn, U., Simmons, J. P., & Nelson, L. D. (2019). Specification Curve: Descriptive and Inferential Statistics for all Plausible Specifications. Available at: https://doi.org/10.2139/ssrn.2694998
+\item Steegen, S., Tuerlinckx, F., Gelman, A., & Vanpaemel, W. (2016). Increasing Transparency Through a Multiverse Analysis. Perspectives on Psychological Science, 11(5), 702-712. https://doi.org/10.1177/1745691616658637
+}
+}
+\seealso{
+\code{\link[=plot_specs]{plot_specs()}} to visualize the results of the specification curve analysis.
 }

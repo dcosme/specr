@@ -1,109 +1,102 @@
 
-# Create regression formula based on setup_specs
-create_formula <- function(x, y, controls, random_effects, ...) {
+# create regression formula based on setup_specs
+create_formula <- function(x,
+                           y,
+                           controls,
+                           ...) {
 
   if (controls == "no covariates") controls <- 1
+  paste(y, "~", x, "+", controls)
 
-  if (random_effects == "no random effects") {
-    paste(y, "~", x, "+", controls)
+}
+
+# run specifications
+run_spec <- function(specs,
+                     df,
+                     conf.level,
+                     keep.results,
+                     keep.formula) {
+  results <- specs %>%
+    dplyr::mutate(formula = pmap(specs, create_formula)) %>%
+    tidyr::unnest(formula) %>%
+    dplyr::mutate(res = map2(.data$model,
+                             formula,
+                             ~ do.call(.x, list(data = df,
+                                                formula = .y)))) %>%
+    dplyr::mutate(coefs = map(.data$res,
+                              broom::tidy,
+                              conf.int = TRUE,
+                              conf.level = conf.level),
+                  fit = map(.data$res, broom::glance)) %>%
+    tidyr::unnest(.data$coefs) %>%
+    tidyr::unnest(.data$fit, names_sep = "_")
+
+  if("op" %in% names(results)) {
+    results <- results %>%
+      dplyr::filter(.data$term == paste(.data$y, "~", .data$x))
   } else {
-    paste(y, "~", x, "+", controls, "+", random_effects)
+    results <- results %>%
+      dplyr::filter(.data$term == .data$x)
   }
-}
 
-# run individual specification
-run_spec <- function(specs, df, random_effects, conf.level, keep.results, keep.formula) {
-
-  # dependencies
-  require(dplyr)
-  require(purrr)
-  require(lme4)
-  require(broom.mixed)
-
-  if (!is.null(random_effects)) {
-
-    results <- specs %>%
-      dplyr::mutate(formula = pmap(specs, create_formula)) %>%
-      tidyr::unnest(formula) %>%
-      dplyr::mutate(res = map2(.data$model,
-                               formula,
-                               ~ do.call(.x, list(data = df,
-                                                  formula = .y)))) %>%
-      dplyr::mutate(coefs = map(.data$res,
-                                broom.mixed::tidy,
-                                conf.int = TRUE,
-                                conf.level = conf.level),
-                    obs = map(.data$res, nobs)) %>%
-      tidyr::unnest(.data$coefs) %>%
-      tidyr::unnest(.data$obs) %>%
-      dplyr::filter(.data$term == .data$x) %>%
-      dplyr::select(-.data$term)
-
-  } else {
-
-    results <- specs %>%
-      dplyr::mutate(formula = pmap(specs, create_formula)) %>%
-      tidyr::unnest(formula) %>%
-      dplyr::mutate(res = map2(.data$model,
-                               formula,
-                               ~ do.call(.x, list(data = df,
-                                                  formula = .y)))) %>%
-      dplyr::mutate(coefs = map(.data$res,
-                                broom::tidy,
-                                conf.int = TRUE,
-                                conf.level = conf.level),
-                    obs = map(.data$res, nobs)) %>%
-      tidyr::unnest(.data$coefs) %>%
-      tidyr::unnest(.data$obs) %>%
-      dplyr::filter(.data$term == .data$x) %>%
-      dplyr::select(-.data$term)
-
-}
+  results <- results %>%
+    dplyr::select(-.data$formula, -.data$term)
 
   if (isFALSE(keep.results)) {
     results <- results %>%
-      select(-res)
+      dplyr::select(-.data$res)
   }
 
   if (isFALSE(keep.formula)) {
     results <- results %>%
-      select(-formula)
+      select(-.data$formula)
   }
 
   return(results)
 }
 
-# create subsets
-create_subsets <- function(df, subsets) {
-
-  # dependencies
-  require(dplyr)
+# creates subsets
+create_subsets <- function(df,
+                           subsets) {
 
   subsets %>%
     stack %>%
-    purrr::pmap(~ filter(df, get(as.character(..2)) == ..1) %>%
-                  mutate(filter = paste(..2, "=", ..1)))
+    pmap(~ dplyr::filter(df, get(as.character(..2)) == ..1) %>%
+           dplyr::mutate(filter = paste(..2, "=", ..1)))
 }
 
 
-format_results <- function(df, null = 0, desc = FALSE) {
+# formats results
+format_results <- function(df, var, null = 0, desc = FALSE) {
 
-  # dependencies
-  require(dplyr)
   # rank specs
   if (isFALSE(desc)) {
     df <- df %>%
-      arrange(estimate)
+      dplyr::arrange(!! var)
   } else {
     df <- df %>%
-      arrange(desc(estimate))
+      dplyr::arrange(desc(!! var))
   }
+
+  # create rank variable and color significance
   df <- df %>%
-    mutate(specifications = 1:n(),
+    dplyr::mutate(specifications = 1:n(),
            color = case_when(conf.low > null ~ "black",
                              conf.high < null ~ "black",
                              TRUE ~ "darkgrey"))
-
   return(df)
 }
 
+# get names from dots
+names_from_dots <- function(...) {
+
+  sapply(substitute(list(...))[-1], deparse)
+
+}
+
+# get names from dots
+names_from_dots <- function(...) {
+
+  sapply(substitute(list(...))[-1], deparse)
+
+}

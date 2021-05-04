@@ -1,12 +1,13 @@
-#' Plot the decision tree
+#' Plot decision tree
 #'
-#' This function plots a simple decision tree that can be used to understand how analytical choices produce a certain number of specifications. It is somewhat useless if the number of specifications is very high.
+#' This function plots a simple decision tree that is meant to help understanding how few analytical choices may results in a large number of specifications. It is somewhat useless if the final number of specifications is very high.
 #'
-#' @param df data frame resulting from \code{run_specs()}.
+#' @param df data frame resulting from [run_specs()].
 #' @param label Logical. Should labels be included? Defaults to FALSE. Produces only a reasonable plot if number of specifications is low.
 #' @param legend Logical. Should specific decisions be identifiable. Defaults to FALSE.
 #'
-#' @return
+#' @return a \link[ggplot2]{ggplot} object.
+#'
 #' @export
 #'
 #' @examples
@@ -22,53 +23,47 @@
 #' # Labelled decisions tree
 #' plot_decisiontree(results, label = TRUE)
 #'
-#' # Identify choices
-#' plot_decisiontree(results, legend = TRUE)
-#'
-#' # All combined
+#' # Add legend
 #' plot_decisiontree(results, label = TRUE, legend = TRUE)
 plot_decisiontree <- function(df,
                               label = FALSE,
                               legend = FALSE) {
 
-  library(ggraph, quietly = TRUE)
-  library(igraph, quietly = TRUE)
-
   # Create data set for graph transformation
   df <- df %>%
-    select(model, x, y, controls, subsets) %>%
-    arrange(model, x, y, controls, subsets) %>%
-    mutate(start = "raw data") %>%
-    select(start, everything()) %>%
-    mutate(x = paste0(x, " & ", model),
-           y = paste0(y, " & ", x),
-           controls = paste0(controls, " & ", y),
-           subsets = paste0(subsets, " & ", controls))
+    dplyr::select(.data$model, .data$x, .data$y, .data$controls, .data$subsets) %>%
+    dplyr::arrange(.data$model, .data$x, .data$y, .data$controls, .data$subsets) %>%
+    dplyr::mutate(start = "raw data") %>%
+    dplyr::select(start, dplyr::everything()) %>%
+    dplyr::mutate(x = paste0(.data$x, " & ", .data$model),
+                  y = paste0(.data$y, " & ", .data$x),
+                  controls = paste0(.data$controls, " & ", .data$y),
+                  subsets = paste0(.data$subsets, " & ", .data$controls))
 
   # Create edges
   edges_level1 <- df %>%
-    select(start, model) %>%
-    rename(from=start, to=model) %>%
+    dplyr::select(.data$start, .data$model) %>%
+    dplyr::rename(from = .data$start, to = .data$model) %>%
     unique %>%
-    mutate(decisions = "model")
+    dplyr::mutate(decisions = "model")
   edges_level2 <- df %>%
-    select(model, x) %>%
-    rename(from=model, to = x) %>%
+    dplyr::select(.data$model, .data$x) %>%
+    dplyr::rename(from = .data$model, to = .data$x) %>%
     unique %>%
-    mutate(decisions = "independent variable")
+    dplyr::mutate(decisions = "independent variable")
   edges_level3 <- df %>%
-    select(x, y) %>%
-    rename(from=x, to=y) %>%
+    dplyr::select(.data$x, .data$y) %>%
+    dplyr::rename(from = .data$x, to = .data$y) %>%
     unique %>%
-    mutate(decisions = "dependent variable")
+    dplyr::mutate(decisions = "dependent variable")
   edges_level4 = df %>%
-    select(y, controls) %>%
-    rename(from=y, to=controls) %>%
-    mutate(decisions = "control variables")
+    dplyr::select(.data$y, .data$controls) %>%
+    dplyr::rename(from = .data$y, to = .data$controls) %>%
+    dplyr::mutate(decisions = "control variables")
   edges_level5 <- df %>%
-    select(controls, subsets) %>%
-    rename(from=controls, to=subsets) %>%
-    mutate(decisions = "subsets")
+    dplyr::select(.data$controls, .data$subsets) %>%
+    dplyr::rename(from = .data$controls, to = .data$subsets) %>%
+    dplyr::mutate(decisions = "subsets")
 
   # Combine edges
   edge_list <- rbind(edges_level1,
@@ -80,24 +75,23 @@ plot_decisiontree <- function(df,
   # Plot edges
   plot <- edge_list %>%
     graph_from_data_frame %>%
-    ggraph(layout = 'dendrogram',
-           circular = FALSE) +
-    geom_edge_diagonal() +
-    #geom_node_point() +
+    ggraph::ggraph(layout = 'dendrogram',
+                   circular = FALSE) +
+    ggraph::geom_edge_diagonal() +
     theme_void()
 
   # Check if legend should be plotted
   if(isTRUE(legend)) {
     plot <- plot +
-      geom_edge_diagonal(aes(color = decisions)) +
-      scale_edge_color_brewer(palette = "Blues")
+      ggraph::geom_edge_diagonal(aes(color = .data$decisions)) +
+      ggraph::scale_edge_color_brewer(palette = "Blues")
   }
 
   # Check if labels should be plotted
   if(isTRUE(label)) {
     plot <- plot +
-      geom_node_text(aes(label=name,
-                         filter = leaf),
+      ggraph::geom_node_text(aes(label = .data$name,
+                                 filter = .data$leaf),
                      angle=90 ,
                      hjust=1,
                      nudge_y = -0.10) +

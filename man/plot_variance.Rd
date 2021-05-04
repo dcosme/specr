@@ -2,15 +2,18 @@
 % Please edit documentation in R/plot_variance.r
 \name{plot_variance}
 \alias{plot_variance}
-\title{Plot variance components of the specification curve}
+\title{Plot variance decomposition}
 \usage{
 plot_variance(model)
 }
 \arguments{
-\item{model}{a multilevel model that captures the variances of the specification curve (resulting from \code{run_specs}).}
+\item{model}{a multilevel model that captures the variances of the specification curve (based on the data frame resulting from \code{run_specs}).}
+}
+\value{
+a \link[ggplot2]{ggplot} object.
 }
 \description{
-Plot variance components of the specification curve
+This functions creates a simple barplot that visually displays how much variance in the outcome (e.g., the regression coefficient) different analytical choices or combinations therefor account for. To use this approach, one needs to estimate a multilevel model that includes all analytical choices as grouping variables (see examples and vignettes). This function uses \code{\link[=icc_specs]{icc_specs()}} to compute the intraclass correlation coefficients (ICCs), which provides the data basis for the plot (see examples).
 }
 \examples{
 # Step 1: Run spec curve analysis
@@ -20,9 +23,13 @@ results <- run_specs(df = example_data,
                      model = c("lm"))
 
 # Step 2: Estimate multilevel model
-library(lme4)
+library(lme4, quietly = TRUE)
 model <- lmer(estimate ~ 1 + (1|x)  + (1|y), data = results)
 
 # Step 3: Plot model
 plot_variance(model)
+
+}
+\seealso{
+\code{\link[=icc_specs]{icc_specs()}} to produce a tibble that details the variance decomposition.
 }

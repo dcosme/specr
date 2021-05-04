@@ -1,6 +1,8 @@
+Fixed description as recommended. 
+
 ## Test environments
 * local OS X install, R 3.6.1
-* ubuntu 14.04 (on travis-ci), R 3.6.1
+* Ubuntu Linux 16.04 LTS (devel and release)
 * win-builder (devel and release)
 
 ## R CMD check results

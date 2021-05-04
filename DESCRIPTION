@@ -1,6 +1,6 @@
 Package: specr
-Title: Statistical functions for conducting specification curve analyses 
-Version: 0.1.1
+Title: Conducting and Visualizing Specification Curve Analyses
+Version: 0.2.2
 Authors@R: c(
     person(given = "Philipp K.",
            family = "Masur",
@@ -10,23 +10,41 @@ Authors@R: c(
     person(given = "Michael",
            family = "Scharkow",
            role = c("aut"),
-           email = "michael@underused.org",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           email = "michael@underused.org")
            )
-Description: The goal of specr is to facilitate specification curve analyses as described by Simonson, Simmons & Nelson (2015). It provides functions to setup, run, and plot all specifications.
+Description: Provides utilities for conducting specification curve analyses (Simonsohn, Simmons & Nelson (2015, <doi: 10.2139/ssrn.2694998>) or multiverse analyses (Steegen, Tuerlinckx, Gelman & Vanpaemel, 2016, <doi: 10.1177/1745691616658637>) including functions to setup, run, evaluate, and plot all specifications.
 License: GPL-3
-URL: https://masurp.github.io/specr/
+URL: https://masurp.github.io/specr/, https://github.com/masurp/specr
 BugReports: https://github.com/masurp/specr/issues
+Depends:
+    R (>= 3.5.0)
 Imports:
-    dplyr,
-    tidyr,
-    purrr,
-    ggplot2,
+    broom,
+    broom.mixed,
     cowplot,
-    broom
+    dplyr,
+    gapminder,
+    ggplot2,
+    ggraph,
+    glue,
+    igraph,
+    lavaan,
+    lme4,
+    magrittr,
+    purrr,
+    rlang, 
+    stringr,
+    tibble,
+    tidyr
 Suggests: 
-    testthat
+    knitr,
+    testthat,
+    tidyverse,
+    performance,
+    progress,
+    rmarkdown
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
+VignetteBuilder: knitr

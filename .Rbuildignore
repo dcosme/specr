@@ -2,5 +2,11 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
 ^cran-comments\.md$
 ^\.github$
+^Meta$
+^docs$
+^_pkgdown\.yml$
+^\.travis\.yml$

@@ -7,32 +7,33 @@
 
 </div>
 
-# specr - Statistical Functions for Specification Curve Analyses
+# specr
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/specr)](https://CRAN.R-project.org/package=specr)
+[![Travis build
+status](https://travis-ci.org/masurp/specr.svg?branch=master)](https://travis-ci.org/masurp/specr)
+![](https://cranlogs.r-pkg.org/badges/grand-total/specr) [![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
-## Overview
+### Conducting and Visualizing Specification Curve Analyses
 
 The goal of specr is to facilitate specification curve analyses
 (Simonsohn, Simmons & Nelson, 2019; also known as multiverse analyses,
 see Steegen, Tuerlinckx, Gelman & Vanpaemel, 2016). It can be used to
-investigate how different (e.g., theoretical defensible) analytical
-choices affect outcome statistics within the universe of one single data
-set.
+investigate how different (theoretically plausible) analytical choices
+affect outcome statistics within the universe of one single data set.
 
 It provides functions to setup, run, evaluate, and plot the multiverse
 of specifications. A simple usage example is provided below. For more
 information about the various functions and specific use cases, visit
 the [documentation](https://masurp.github.io/specr/index.html).
 
-For a more comprehensive examples and vignettes on how to use the
-various functions of the package, check out the following pages:
+There are also some vignettes that exemplify and explain specific
+aspects and functions of the package:
 
   - [Getting
     started](https://masurp.github.io/specr/articles/specr.html): A
@@ -44,26 +45,39 @@ various functions of the package, check out the following pages:
     curve.
   - [Decomposing the variance of the specification
     curve](https://masurp.github.io/specr/articles/decompose_var.html):
-    An example of how to investigate variance components of the
-    specification curve.
+    Investigating variance components of the specification curve.
+  - [Including latent measurement
+    models](https://masurp.github.io/specr/articles/measurement_models.html):
+    This vignette exemplifies how to include latent measurement models
+    and estimate structural equations models using `lavaan`.
+  - [Including random effects/Estimate multilevel
+    models](https://masurp.github.io/specr/articles/random_effects.html):
+    This vignette exemplifies how to include random effects and estimate
+    multilevel models using `lme4`.
   - [Visualizing progress during
     estimation](https://masurp.github.io/specr/articles/progress.html):
-    This vignette explains how to create a customizable progress bar for
-    longer computations.
+    This vignette explains how to create a progress bar for longer
+    computations.
 
-## Disclaimer
+### Disclaimer
 
 We do see a lot of value in investigating how analytical choices affect
 a statistical outcome of interest. However, we strongly caution against
 using `specr` as a tool to somehow arrive at a better estimate. Running
 a specification curve analysis does not make your findings any more
-reliable, valid or generalizable than a single analyis. The method is
+reliable, valid or generalizable than a single analysis. The method is
 only meant to inform about the effects of analytical choices on results,
 and not a better way to estimate a correlation or effect.
 
-## Installation
+### Installation
 
-You can install the development version from
+Install specr from CRAN:
+
+``` r
+install.packages("specr")
+```
+
+Or install the most recent development version from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -71,13 +85,14 @@ You can install the development version from
 devtools::install_github("masurp/specr")
 ```
 
-## Simple example
+### Usage
 
 Using `specr` is comparatively simple. The main function is
 `run_specs()` in which analytical choices are specified as arguments.
 The function `plot_specs()` can then be used to visualize the results.
 
 ``` r
+# Load package
 library(specr)
 
 # Run specs
@@ -90,7 +105,7 @@ results <- run_specs(df = example_data,
                                     group2 = unique(example_data$group2)))
 # Result frame
 head(results)
-#> # A tibble: 6 x 12
+#> # A tibble: 6 x 23
 #>   x     y     model controls estimate std.error statistic  p.value conf.low
 #>   <chr> <chr> <chr> <chr>       <dbl>     <dbl>     <dbl>    <dbl>    <dbl>
 #> 1 x1    y1    lm    c1 + c2     4.95      0.525     9.43  3.11e-18    3.92 
@@ -99,7 +114,11 @@ head(results)
 #> 4 x2    y2    lm    c1 + c2     0.985     0.324     3.04  2.62e- 3    0.347
 #> 5 x1    y1    lm    c1          5.53      0.794     6.97  2.95e-11    3.96 
 #> 6 x2    y1    lm    c1          8.07      0.557    14.5   6.90e-35    6.98 
-#> # … with 3 more variables: conf.high <dbl>, obs <int>, subsets <chr>
+#> # … with 14 more variables: conf.high <dbl>, fit_r.squared <dbl>,
+#> #   fit_adj.r.squared <dbl>, fit_sigma <dbl>, fit_statistic <dbl>,
+#> #   fit_p.value <dbl>, fit_df <dbl>, fit_logLik <dbl>, fit_AIC <dbl>,
+#> #   fit_BIC <dbl>, fit_deviance <dbl>, fit_df.residual <int>, fit_nobs <int>,
+#> #   subsets <chr>
 
 # Plot
 plot_specs(results, choices = c("x", "y", "controls", "subsets"))
@@ -107,43 +126,34 @@ plot_specs(results, choices = c("x", "y", "controls", "subsets"))
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
-## How to cite this package
-
-Developing and maintaining open source software is an important yet
-often underappreciated contribution to scientific progress. Thus,
-whenever you are using open source software (or software in general),
-please make sure to cite it appropriately so that developers get credit
-for their work.
-
-When using `specr`, please cite it as follows:
+### How to cite this package
 
 ``` r
 citation("specr")
 #> 
-#> To cite parameters in publications use:
+#> To cite 'specr' in publications use:
 #> 
-#>   Masur, Philipp K. & Scharkow, M. (2019). specr: Statistical
-#>   functions for conducting specification curve analyses. Available
-#>   from https://github.com/masurp/specr.
+#>   Masur, Philipp K. & Scharkow, M. (2020). specr: Conducting and
+#>   Visualizing Specification Curve Analyses. Available from
+#>   https://CRAN.R-project.org/package=specr.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Misc{,
-#>     title = {specr: Statistical functions for conducting specification curve analyses (Version 0.1.1)},
+#>     title = {specr: Conducting and Visualizing Specification Curve Analyses (Version 0.2.2)},
 #>     author = {Philipp K. Masur and Michael Scharkow},
-#>     year = {2019},
-#>     url = {https://github.com/masurp/specr},
+#>     year = {2020},
+#>     url = {https://CRAN.R-project.org/package=specr},
 #>   }
 ```
 
-## References
+### References
 
-Simonsohn, U., Simmons, J. P., & Nelson, L. D. (2019). Specification
+Simonsohn, U., Simmons, J. P., & Nelson, L. D. (2019). *Specification
 Curve: Descriptive and Inferential Statistics for all Plausible
-Specifications Available at:
-<http://urisohn.com/sohn_files/wp/wordpress/wp-content/uploads/Paper-Specification-curve-2019-11-16.pdf>
+Specifications.* Available at: <https://doi.org/10.2139/ssrn.2694998>
 
 Steegen, S., Tuerlinckx, F., Gelman, A., & Vanpaemel, W. (2016).
-Increasing Transparency Through a Multiverse Analysis. Perspectives on
-Psychological Science, 11(5), 702-712. Available at:
-<http://www.stat.columbia.edu/~gelman/research/published/multiverse_published.pdf>
+Increasing Transparency Through a Multiverse Analysis. *Perspectives on
+Psychological Science*, 11(5), 702-712.
+<https://doi.org/10.1177/1745691616658637>
