@@ -87,7 +87,7 @@ plot_curve <- function(df,
   if (isTRUE(ci)) {
     plot <- plot +
       geom_pointrange(alpha = ci_alpha,
-                      size = ci_size,
+                      linewidth = ci_size,
                       fatten = 1)
   }
 
@@ -99,14 +99,14 @@ plot_curve <- function(df,
                       color = .data$color),
                   color = NA,
                   alpha = ci_alpha,
-                  size = ci_size)
+                  linewidth = ci_size)
   }
 
   # add line if necessary
   if (isTRUE(line)) {
     plot <- plot +
       geom_line(aes(color = .data$color),
-                size = line_size)
+                linewidth = line_size)
   }
 
   return(plot)
